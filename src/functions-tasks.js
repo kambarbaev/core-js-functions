@@ -54,7 +54,7 @@ function getFunctionBody(func) {
  *
  */
 function getArgumentsCount(funcs) {
-  return [...funcs].map((func) => func.length);
+  return [...funcs].map((item) => item.length);
 }
 
 /**
@@ -173,8 +173,18 @@ function retry(func, attempts) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return function innerFunc(...args) {
+    const argsArray = args
+      .map((item) => JSON.stringify(item).toString())
+      .join(',');
+
+    logFunc(`${func.name}(${argsArray}) starts`);
+    const result = func(...args);
+    logFunc(`${func.name}(${argsArray}) ends`);
+
+    return result;
+  };
 }
 
 /**
@@ -190,8 +200,10 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  return function innerFunc(...args2) {
+    return fn(...args1, ...args2);
+  };
 }
 
 /**
